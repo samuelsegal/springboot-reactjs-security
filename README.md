@@ -9,4 +9,5 @@ Check branches for different stages of developement.
 2) Specify http://localhost:8080/login/oauth2/code/okta as Login Redirect URI
 3) Add http://localhost:3000 and http://localhost:8080 as Logout redirect URIs
 
+#### References  
 * https://developer.okta.com/blog/2018/07/19/simple-crud-react-and-spring-boot  
