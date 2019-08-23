@@ -3,7 +3,14 @@ import { Link, withRouter } from 'react-router-dom';
 import { Button, Container, Form, FormGroup, Input, Label } from 'reactstrap';
 import AppNavbar from './AppNavbar';
 
+import { instanceOf } from 'prop-types';
+import { Cookies, withCookies } from 'react-cookie';
+
 class GroupEdit extends Component {
+	static propTypes = {
+		cookies: instanceOf(Cookies).isRequired,
+	};
+
 	emptyItem = {
 		name: '',
 		address: '',
@@ -15,8 +22,10 @@ class GroupEdit extends Component {
 
 	constructor(props) {
 		super(props);
+		const { cookies } = props;
 		this.state = {
 			item: this.emptyItem,
+			csrfToken: cookies.get('XSRF-TOKEN'),
 		};
 		this.handleChange = this.handleChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
@@ -24,8 +33,14 @@ class GroupEdit extends Component {
 
 	async componentDidMount() {
 		if (this.props.match.params.id !== 'new') {
-			const group = await (await fetch(`/api/group/${this.props.match.params.id}`)).json();
-			this.setState({ item: group });
+			try {
+				const group = await (await fetch(`/api/group/${this.props.match.params.id}`, {
+					credentials: 'include',
+				})).json();
+				this.setState({ item: group });
+			} catch (error) {
+				this.props.history.push('/');
+			}
 		}
 	}
 
@@ -40,15 +55,17 @@ class GroupEdit extends Component {
 
 	async handleSubmit(event) {
 		event.preventDefault();
-		const { item } = this.state;
+		const { item, csrfToken } = this.state;
 
 		await fetch('/api/group', {
 			method: item.id ? 'PUT' : 'POST',
 			headers: {
+				'X-XSRF-TOKEN': this.state.csrfToken,
 				Accept: 'application/json',
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify(item),
+			credentials: 'include',
 		});
 		this.props.history.push('/groups');
 	}
@@ -146,4 +163,4 @@ class GroupEdit extends Component {
 	}
 }
 
-export default withRouter(GroupEdit);
+export default withCookies(withRouter(GroupEdit));

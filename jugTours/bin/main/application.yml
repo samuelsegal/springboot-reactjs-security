@@ -1,4 +1,16 @@
 
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          okta:
+            client-id: ${REACT_APP_SPRINGBOOT_REACTS_SECURITY_OKTA_CLIENT_ID}
+            client-secret: ${REACT_APP_SPRINGBOOT_REACTS_SECURITY_OKTA_CLIENT_SECRET}
+            scope: openid, email, profile
+        provider:
+          okta:
+            issuer-uri: ${OKTA_ISSUER_URI}
               
               
               
